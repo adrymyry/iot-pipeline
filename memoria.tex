@@ -17,11 +17,11 @@
     \begin{document}
 
         \title{% 
-            \textbf{Pipeline para el Análisis en Tiempo Real de datos IoT} \\
-            \large Trabajo de Investigación \\
-            \textit{Internet de las Cosas en el Contexto de Big Data}\\
-            \textit{Máster en Tecnologías de Análisis \\ de Datos Masivos: BIG DATA}
-            }
+            \huge \textbf{Pipeline para el Análisis en Tiempo Real de datos IoT} \\
+            \LARGE Trabajo de Investigación \\
+            \Large Internet de las Cosas en el Contexto de Big Data\\
+            \normalsize Máster en Tecnologías de Análisis de Datos Masivos: Big Data
+        }
         \author{Adrián Miralles Palazón}
         \date{\today}
         \maketitle
@@ -37,20 +37,44 @@
         \section{Introducción}
 
         \paragraph{}
-        El ecosistema de tecnologías desarrolladas para el análisis inteligente de datos producidos por dispositivos o sensores conectados, Internet de las Cosas (IoT), se encuentra en una fase de maduración e implantación en numerosas industrias. Casi todos los dispositivos que utilizamos se están convirtiendo en dispositivos inteligentes que están continuamente generando datos sobre parámetros internos o del medio que los rodea.
+        El ecosistema de tecnologías desarrolladas para el análisis inteligente de datos producidos por dispositivos o sensores conectados, Internet de las Cosas (IoT), se encuentra en una fase de maduración e implantación en numerosas industrias. Casi todos los dispositivos que se utilizan se están convirtiendo en dispositivos inteligentes que están continuamente generando datos sobre parámetros internos o del medio que los rodea.
 
         \paragraph{}
-        La recolección, el preprocesamiento, el almacenamiento y el análisis posterior de estos datos debe ser establecido mediante un procedimiento que permita la obtención de resultados clave para el dominio de aplicación del problema a solventar. Este procedimiento se conoce como \textit{data pipeline}.
+        La recolección, el preprocesamiento, el almacenamiento y el análisis posterior de estos datos debe ser establecido mediante un procedimiento que permita la obtención de resultados clave para el dominio de aplicación del problema a solventar. Este procedimiento se conoce como \textit{data pipeline} por los analistas de datos.
 
         \paragraph{}
-        
+        En cada una de estas fases es posible la utilización de tecnologías tradicionales. Sin embargo, las características que suelen tener los escenarios IoT provocan que sea necesario la utilización de tecnologías que han sido desarrolladas específicamente para entornos de este tipo. Entre estas características destacan la localización distribuida de los dispositivos que poseen los sensores, las ingentes cantidades de información que estos generan y la escasa capacidad de cómputo que tienen estos dispositivos.
 
 
         \section{Motivación y objetivos}
 
+        \paragraph{}
+        Estar al día de todas las tecnologías que surgen para la realización de todas las tareas relacionadas con el proceso de extracción, procesamiento y análisis de los datos es una de las labores más complicadas a las que se enfrenta un profesional de este campo.
 
+        \paragraph{}
+        Este hecho se convierte en un problema para titulaciones especializadas en este sector como el título de Máster en Tecnologías de Análisis de Datos Masivos: BIG DATA en el que se enmarca este trabajo. Resulta prácticamente imposible que el contenido que forma parte del plan de estudios de estas titulaciones cumpla con las espectativas del alumnado ya que siempre quedarán temas y tecnologías por tratar.
+
+        \paragraph{}
+        No obstante, este tipo de trabajo deberían ser una opción extraordianaria para los alumnos para llevar a cabo este tipo de tareas de profundización en algunos temas o tecnologías.
+
+        \paragraph{}
+        Bajo este argumento surge la idea de este trabajo en el que se establece como objetivo llevar a cabo una implementación práctica de un \textit{data pipeline} utilizando tecnologías que no hayan sido puestas en práctica en ninguna de las asignaturas de la titulación.
+
+        \paragraph{}
+        Para ello, será necesario estudiar las alternativas existentes en cada uno las etapas existentes para realizar la sensorización, extracción de los datos, realizar el procesamiento de los mismos y el almacenamiento para el posterior análisis de toda la información. La selección de una tecnología no sólo deberá estar marcada por adecuarse a las tareas que se requieren sino que también deberá cumplir la condición de no haber sido estudiada previamente.
 
         \section{Estado de arte}
+
+        \paragraph{}
+        Cumpliendo con las restricciones establecidas en los objetivos planteados en la sección anterior, se han seleccionado las siguientes herramientas o tecnologías para la creación del \textit{data pipeline}. 
+        
+        \paragraph{}
+        Para la sensorización, se utilizará un dispositivo de bajo coste conocido como Raspberry Pi. Para la comunicación de estos dispositivos con una plataforma donde poder agregar la información se utilizan dos tecnologías: MQTT es un protocolo que facilita la comunicación con los dispositivos situados de forma distribuida y Apache Kafka es una plataforma que permite escalar horizontalmente de forma muy sencilla el procesamiento de los datos para su almacenamiento. Con respecto al almacenamiento, se ha seleccionado InfluxDB, una base de datos de código abierto que está optimizada para el almacenamiento rápido y de alta diponibilidad de series temprales. Finalmente, utilizaremos Grafana para la creación de una serie de cuados de mando que faciliten el análisis y visualización de los datos que generan los dispositivos.
+
+        \paragraph{}
+        A continuación, se incluye una breve descripción teórica de cada una de los dispositivos, herramientas o tecnologías que se han seleccionado.
+
+        \subsection{Raspberry Pi}
 
         \subsection{Message Queuing Telemetry Transport (MQTT)}
         
