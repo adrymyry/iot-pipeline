@@ -69,22 +69,74 @@
         Cumpliendo con las restricciones establecidas en los objetivos planteados en la sección anterior, se han seleccionado las siguientes herramientas o tecnologías para la creación del \textit{data pipeline}. 
         
         \paragraph{}
-        Para la sensorización, se utilizará un dispositivo de bajo coste conocido como Raspberry Pi. Para la comunicación de estos dispositivos con una plataforma donde poder agregar la información se utilizan dos tecnologías: MQTT es un protocolo que facilita la comunicación con los dispositivos situados de forma distribuida y Apache Kafka es una plataforma que permite escalar horizontalmente de forma muy sencilla el procesamiento de los datos para su almacenamiento. Con respecto al almacenamiento, se ha seleccionado InfluxDB, una base de datos de código abierto que está optimizada para el almacenamiento rápido y de alta diponibilidad de series temprales. Finalmente, utilizaremos Grafana para la creación de una serie de cuados de mando que faciliten el análisis y visualización de los datos que generan los dispositivos.
+        Para la sensorización, se utilizará un dispositivo de bajo coste conocido como Raspberry Pi. Para la comunicación de estos dispositivos con una plataforma donde poder agregar la información se utilizan dos tecnologías: MQTT es un protocolo que facilita la comunicación con los dispositivos situados de forma distribuida y Apache Kafka es una plataforma que permite escalar horizontalmente de forma muy sencilla el procesamiento de los datos para su almacenamiento. Con respecto al almacenamiento, se ha seleccionado InfluxDB, una base de datos de código abierto que está optimizada para el almacenamiento rápido y de alta diponibilidad de series temprales. Finalmente, se utiliza Grafana para la creación de una serie de cuados de mando que faciliten el análisis y visualización de los datos que generan los dispositivos.
 
         \paragraph{}
         A continuación, se incluye una breve descripción teórica de cada una de los dispositivos, herramientas o tecnologías que se han seleccionado.
 
         \subsection{Raspberry Pi}
+        
+        \paragraph{}
+        La Raspberry Pi es un ordenador pequeño y de bajo coste que tiene como objetivo poner el poder de la computación en manos de gente de cualquier parte del mundo. Sus características lo han convertido, junto a Arduino, en una de las piezas angulares de la gran mayoría de proyectos de sensorización.
+
+        \paragraph{}
+        La presencia de pines GPIO es precisamente la característica que más influencia tiene en este hecho. Estos pines son los que permiten la conexión de los distintos sensores. Un aspecto relevante en este aspecto es que la Raspberry Pi no posee pines analógicos por lo que solo será posible utilizar sensores puramente digitales.
+
+        \paragraph{}
+        Del mismo modo, existen distintos modelos de Raspberry Pi que varían sus especificaciones. Entre éstas es necesario destacar las distintas herramientas para la conectividad que presenta. Por ejemplo, existen modelos que poseen módulos para la conexión por WiFi o Bluetooth y otros que no. Aunque esta característica no va a ser imprescindible para nuestro escenario de prueba pero si que es una especificación que habría que tener muy en cuenta para un eventual despliegue real.
 
         \subsection{Message Queuing Telemetry Transport (MQTT)}
         
+        \paragraph{}
+        MQTT es un protocolo de intercambio de mensajes extremadamente liviano y sencillo. Se basa en un modelo de publicación y subscripción. Ha sido diseñado para dispositivos con recursos limitados, que disponen de poco ancho de banda para comunicarse, con latencias muy altas y sobre redes poco confiables.
+
+        \paragraph{}
+        Los principios que se utilizaron para su diseño fueron minimizar el ancho de banda necesario y los recursos que el dispositivo debería reservar. Todo esto sin obviar la necesidad de intentar asegurar algún grado de confianza en la entrega. Todos estos principios lo han convertido en una de las alternativas más usadas en entornos IoT donde la bateria y el ancho de banda de los dispositivos es uno de los factores más relevantes a la hora de elegir un protocolo.
+
+        \paragraph{}
+        MQTT es un protocolo que se utiliza sobre la pila de protocolos TCP/IP frente a otros protocolos como COAP que utiliza UDP. Sin embargo, existe una versión MQTT-SN que pretende eliminar esta restricción y extender el uso de MQTT más allá de la infraestructura TCP/IP.
+
+        \paragraph{}
+        Este protocolo define las entidades de \textit{client} y \textit{broker}. Los clientes se conectan al broker y se suscriben a diferentes \textit{topics}, esto es, tipos de mensajes que desean recibir. Los clientes también pueden publicar mensajes en un determinado topic comunicándoselo al broker. Por tanto, el broker es la figura que trata de comunicar a los dispositivos que se suscriben a un topic con los que publican mensajes sobre ese topic.
+
+        \paragraph{}
+        Los topics son organizados de forma jerárquica para permitir la agregación de posibles tipos de mensajes relacionados. Para ello se utiliza una nomenclatura similar a la utilizada en los sistemas de ficheros convencionales. Por ejemplo, el topic \textit{UMU/FacInformatica/Lab24/temperature} representaría un tipo de mensajes que contienen la temperatura del laboratorio 2.4 de la Facultad de Informática de la UMU. Sin embargo, es posible recibir este tipo de mensajes con una suscripción al topic \textit{UMU/FacInformatica} para facilitar la agregación.
+
         \subsection{Apache Kafka}
         
-        \subsection{InfluxDB}
-        
-        \subsection{Grafana}
-        
+        \paragraph{}
+        Apache Kafka es una plataforma para la gestión de streams de datos en tiempo real de forma distribuida. Se utiliza para construir \textit{data pipelines} que sean horizontalmente escalables y tolerantes a fallos. Es una plataforma que esta siendo utilizada en producción por grandes compañías.
 
+        \paragraph{}
+        Su funcionamiento se basa en los mismos conceptos que MQTT, es decir, utiliza un esquema de publicación y suscripción a diferentes streams asociados a un tema. Sin embargo, sus características son diferentes. Esta plataforma se encarga de almacenar los streams de datos para que sean tolerantes a fallos. Para ello, se suele ejecutar sobre un cluster de servidores que almacenan los distintos registros de datos en topics. 
+
+        \paragraph{}
+        La arquitectura de Kafka es más compleja que la que propone MQTT pese a seguir un esquema similar. El cluster de servidores sobre el que se ejecuta mantiene una serie de particiones en las que se replica la información entre los distintos servidores. Además, Kafka separa las entidades de los clientes de la plataforma entre los \textit{Producers} que son los encargados de generar los datos que se publican en un determinado \textit{topic} asignando cada registro de datos a una determinada partición. Por otro lado, se encuentra la figura de los \textit{Consumers}, que se encuentran agregados en grupos que se suscriben a un determinado topic. Un registro de datos que se publica a un topic es entregado sólo a un grupo de Consumers para que lo procese. Cada grupo debe gestionar los datos que recibe para que sean procesados de forma balanceada entre los distintos Consumers.
+
+        \paragraph{}
+        Este tipo de plataformas está siendo utilizada principalmente para la construcción de \textit{data pipelines} que necesitan funcionar en tiempo real para proporcionar confianza en la distribución de los datos entre unos sistemas y otros.
+
+        \paragraph{}
+        La utilización de una plataforma de este tipo para un escenario de prueba puede parecer forzada puesto que la cantidad de datos que se generan no es considerable. Es lógico creer que un sencillo programa que se suscribe a los distintos brokers MQTT en los que publican los mensajes los dispositivos y que almacena esta información en una base de datos. Esto sería correcto si se piensa en un escenario pequeño. No obstante, es conveniente realizar el ejercicio de pensar en cómo escalaría este sistema si se necesita monitorizar datos emitidos por todos los dispositivos móviles del planeta. Este sencillo programa no podría ser ejecutado en ningún ordenador. Por este motivo, es necesario recurrir a plataformas como Apache Kafka que permiten escalar horizontalmente de forma sencilla este tipo de sistemas.
+        
+        \subsection{InfluxDB}
+
+        \paragraph{}
+        InfluxDB es una base datos de código abierto desarrollada por InfluxData que ha sido desarrollada y optimizada para la gestión de datos pertenecientes a series temporales. Sus características la han convertido en un referente para tareas de monitorización, gestión de métricas o análsis de datos procedentes de sensores IoT.
+
+        \paragraph{}
+        Ha sido construida para poder ser escalada utilizando clusters de servidores que garanticen la alta disponibilidad y eliminen la existencia de un punto único de fallo. Para su gestión proporciona un lenguaje similar a SQL con funciones específicas para la consulta de datos que suelen estar compuestos por medidas, series o puntos.
+
+        \subsection{Grafana}
+
+        \paragraph{}
+        Grafana es una herramienta \textit{open-source} desarrollada para facilitar la visualización y análisis de datos procedentes de distintas métricas. Se centra en el análisis de datos procedentes de series temporales ofreciendo herramientas que faciliten el tratamiento de los mismos.
+
+        \paragraph{}
+        Ofrece compatibilidad con la gran mayoría de bases de datos que están siendo utilizadas actualmente para almacenar este tipo de información como pueden ser InfluxDB, Graphite, Prometheus o Elasticsearch.
+
+        \paragraph{}
+        Sus herramientas se basan en la construcción de cuadros de mando o dashboards que permiten administrar toda la información disponible en de forma más cómoda. Estos dashboards no se limitan a la administación tradicional sino que se ofrecen herramientas que permiten compartir mediante enlaces la información de los mismos con distintos usuarios así como la creación de instantáneas fácilmente compartibles.
 
         \section{Diseño de solución}
 
@@ -96,11 +148,7 @@
         \subsubsection{Kafka cluster}
         \subsubsection{Kafka consumer}
         \subsubsection{InfluxDB}
-        \subsubsection{Grafana}
-
-        \subsection{Interacción}
-        
-
+        \subsubsection{Grafana}        
 
         \section{Desarrollo de solución}
 
@@ -113,6 +161,15 @@
         \subsection{Análisis de datos}
         
         \section{Conclusiones}
+
+        \paragraph{}
+        Con este trabajo se ha conseguido construir un \textit{data pipeline} de forma completa que utiliza tecnologías que está siendo usadas en producción por grandes compañías. Además, ha cumplido con el objetivo de utilizar herramientas que no han sido utilizadas en ninguna de las asignaturas de la titulación.
+
+        \paragraph{}
+        Tras su realización, se propone como vías futuras para continuar con el mismo la profundización en todas las tecnologías que han sido utilizadas ya que su inclusión ha sido meramente simbólica y no se ha llegado a explorar con profundidad ni detenimiento de ninguna de ellas. Del mismo modo, sería interesante realizar un análisis de la idoneidad de este tipo de arquitecturas para algún escenario de despliegue real más allá del inventado para realizar las pruebas que permitiesen la elaboración de este trabajo.
+
+        \paragraph{}
+        Por otro lado, sería interesante destacar como la realización de este tipo de trabajos permite explorar tecnologías que quedan fuera del alcance de la programación de ninguna asignatura, permitiendo realizar un proceso de formación un tanto diferente al que se sigue tradicionalmente. Esto suele generar mucha contronversia en los alumnos puesto que tener que enfrentarse a trabajos con una temática libre es algo a lo que no se está aconstubmrado. No obstante, se deberían comenzar a valor de una forma mucho más positiva ya que implica el desarrollo de capacidades que no solemos trabajar.
 
         % \begin{figure}[p]
         %         \centerline{\includegraphics[width=0.9\paperwidth]{ventas}}
