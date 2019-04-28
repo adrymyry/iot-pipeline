@@ -3,30 +3,36 @@
     \usepackage[spanish, es-tabla]{babel}
     \selectlanguage{spanish}
     \usepackage[utf8]{inputenc}
-    \usepackage{listings}
+    \usepackage{listings, xcolor}
     \usepackage{graphicx}
+    \usepackage[hidelinks]{hyperref}
+
     \graphicspath{ {images/} }
     
     \lstset{
-        basicstyle={\tiny\ttfamily},
+        basicstyle={\small\ttfamily},
         numbers=none,
         breaklines=true,
-        breakatwhitespace=true
+        breakatwhitespace=true,
+        string=[s]{"}{"},
+        stringstyle=\color{blue},
+        comment=[l]{:},
+        commentstyle=\color{black}
     }
 
     \begin{document}
 
         \title{% 
-            \huge \textbf{Pipeline para el Análisis en Tiempo Real de datos IoT} \\
-            \LARGE Trabajo de Investigación \\
-            \Large Internet de las Cosas en el Contexto de Big Data\\
+            \huge \textbf{Pipeline para el Análisis en Tiempo Real de datos IoT} \\ \bigskip
+            \LARGE Trabajo de Investigación \\ \medskip
+            \Large Internet de las Cosas en el Contexto de Big Data\\ \smallskip
             \normalsize Máster en Tecnologías de Análisis de Datos Masivos: Big Data
         }
         \author{Adrián Miralles Palazón}
         \date{\today}
         \maketitle
 
-        \begin{figure}[h]
+        \begin{figure}[ht]
             \centerline{\includegraphics[]{logo}}
         \end{figure}
 
@@ -69,7 +75,7 @@
         Cumpliendo con las restricciones establecidas en los objetivos planteados en la sección anterior, se han seleccionado las siguientes herramientas o tecnologías para la creación del \textit{data pipeline}. 
         
         \paragraph{}
-        Para la sensorización, se utilizará un dispositivo de bajo coste conocido como Raspberry Pi. Para la comunicación de estos dispositivos con una plataforma donde poder agregar la información se utilizan dos tecnologías: MQTT es un protocolo que facilita la comunicación con los dispositivos situados de forma distribuida y Apache Kafka es una plataforma que permite escalar horizontalmente de forma muy sencilla el procesamiento de los datos para su almacenamiento. Con respecto al almacenamiento, se ha seleccionado InfluxDB, una base de datos de código abierto que está optimizada para el almacenamiento rápido y de alta diponibilidad de series temprales. Finalmente, se utiliza Grafana para la creación de una serie de cuados de mando que faciliten el análisis y visualización de los datos que generan los dispositivos.
+        Para la sensorización, se utilizará un dispositivo de bajo coste conocido como Raspberry Pi \cite{raspberry}. Para la comunicación de estos dispositivos con una plataforma donde poder agregar la información se utilizan dos tecnologías: MQTT \cite{mqtt} es un protocolo que facilita la comunicación con los dispositivos situados de forma distribuida y Apache Kafka \cite{kafka} es una plataforma que permite escalar horizontalmente de forma muy sencilla el procesamiento de los datos para su almacenamiento. Con respecto al almacenamiento, se ha seleccionado InfluxDB \cite{influx}, una base de datos de código abierto que está optimizada para el almacenamiento rápido y de alta diponibilidad de series temprales. Finalmente, se utiliza Grafana \cite{grafana} para la creación de una serie de cuados de mando que faciliten el análisis y visualización de los datos que generan los dispositivos.
 
         \paragraph{}
         A continuación, se incluye una breve descripción teórica de cada una de los dispositivos, herramientas o tecnologías que se han seleccionado.
@@ -80,10 +86,10 @@
         La Raspberry Pi es un ordenador pequeño y de bajo coste que tiene como objetivo poner el poder de la computación en manos de gente de cualquier parte del mundo. Sus características lo han convertido, junto a Arduino, en una de las piezas angulares de la gran mayoría de proyectos de sensorización.
 
         \paragraph{}
-        La presencia de pines GPIO es precisamente la característica que más influencia tiene en este hecho. Estos pines son los que permiten la conexión de los distintos sensores. Un aspecto relevante en este aspecto es que la Raspberry Pi no posee pines analógicos por lo que solo será posible utilizar sensores puramente digitales.
+        La presencia de pines GPIO \cite{gpio} es precisamente la característica que más influencia tiene en este hecho. Estos pines son los que permiten la conexión de los distintos sensores. Un aspecto relevante en este aspecto es que la Raspberry Pi no posee pines analógicos por lo que solo será posible utilizar sensores puramente digitales.
 
         \paragraph{}
-        Del mismo modo, existen distintos modelos de Raspberry Pi que varían sus especificaciones. Entre éstas es necesario destacar las distintas herramientas para la conectividad que presenta. Por ejemplo, existen modelos que poseen módulos para la conexión por WiFi o Bluetooth y otros que no. Aunque esta característica no va a ser imprescindible para nuestro escenario de prueba pero si que es una especificación que habría que tener muy en cuenta para un eventual despliegue real.
+        Del mismo modo, existen distintos modelos de Raspberry Pi que varían sus especificaciones. Entre éstas es necesario destacar las distintas herramientas para la conectividad que presenta. Por ejemplo, existen modelos que poseen módulos para la conexión con tecnologías inalámbricas y otros que no. Aunque esta característica no va a ser imprescindible para el escenario de prueba pero si que es una especificación que habría que tener muy en cuenta para un eventual despliegue real.
 
         \subsection{Message Queuing Telemetry Transport (MQTT)}
         
@@ -94,7 +100,7 @@
         Los principios que se utilizaron para su diseño fueron minimizar el ancho de banda necesario y los recursos que el dispositivo debería reservar. Todo esto sin obviar la necesidad de intentar asegurar algún grado de confianza en la entrega. Todos estos principios lo han convertido en una de las alternativas más usadas en entornos IoT donde la bateria y el ancho de banda de los dispositivos es uno de los factores más relevantes a la hora de elegir un protocolo.
 
         \paragraph{}
-        MQTT es un protocolo que se utiliza sobre la pila de protocolos TCP/IP frente a otros protocolos como COAP que utiliza UDP. Sin embargo, existe una versión MQTT-SN que pretende eliminar esta restricción y extender el uso de MQTT más allá de la infraestructura TCP/IP.
+        MQTT es un protocolo que se utiliza sobre la pila de protocolos TCP/IP \cite{rfc793} frente a otros protocolos como COAP \cite{rfc7252} que utiliza UDP \cite{rfc768}. Sin embargo, existe una versión MQTT-SN que pretende eliminar esta restricción y extender el uso de MQTT más allá de la infraestructura TCP/IP.
 
         \paragraph{}
         Este protocolo define las entidades de \textit{client} y \textit{broker}. Los clientes se conectan al broker y se suscriben a diferentes \textit{topics}, esto es, tipos de mensajes que desean recibir. Los clientes también pueden publicar mensajes en un determinado topic comunicándoselo al broker. Por tanto, el broker es la figura que trata de comunicar a los dispositivos que se suscriben a un topic con los que publican mensajes sobre ese topic.
@@ -140,26 +146,171 @@
 
         \section{Diseño de solución}
 
+        \paragraph{}
+        Para llevar a cabo un \textit{data pipeline} que nos permita poner en marcha todas las tecnologías descritas en el apartado anterior, es necesario, definir un escenario de aplicación. Este escenario consiste en una serie de dispositivos situados en cada una de las estancias de los edificios públicos de la Universidad de Murcia. El objetivo de estos dispositivos sería obtener información con distintos sensores sobre la temperatura, humedad, luminosidad, niveles de C02 y el ruido. El objetivo del \textit{data pipeline} sería agrupar toda la información que registran los dispositivos para que pueda ser analizada.
+        
+        \paragraph{}
+        Para llevar este escenario a la práctica es necesario tener en cuenta que no es posible realizar un despliegue de estas características. Tampoco es posible acceder a los datos de dispositivos que ya hayan podido ser desplegados previamente. No obstante, se pretende realizar una simulación con los recursos disponibles que permita entender las dimensiones del mismo.
+
         \subsection{Entidades}
 
-        \subsubsection{Sensor + MQTT client (publisher)}
-        \subsubsection{MQTT broker}
-        \subsubsection{MQTT client (subscriber) + Kafka producer}
-        \subsubsection{Kafka cluster}
-        \subsubsection{Kafka consumer}
+        \paragraph{}
+        Dejando el escenario de aplicación a un lado, en esta sección, se trata de plantear las distintas figuras que deben aparecer en un \textit{data pipeline} que utiliza las tecnologías anteriores y cómo éstas deben interactuar entre ellas. La figura \ref{fig-design} muestra las entidades que se han definido siguiendo una arquitectura similar a la de referencia comentada en clase.
+
+        \begin{figure}[ht]
+            \centerline{\includegraphics[width=0.6\paperwidth]{design}}
+            \caption{Entidades del \textit{data pipeline} propuesto.}
+            \label{fig-design}
+        \end{figure}
+
+        \subsubsection{Sensor Reader + MQTT Client (publisher)}
+
+        \paragraph{}
+        Realizando un recorrido entre las entidades que intervienen desde la generación de los datos hasta su análisis final, es necesario comenzar por la figura encargada de leer los datos de los distintos sensores.
+
+        \paragraph{}
+        Estos datos deben ser publicados utilizando el protocolo MQTT en un MQTT Broker. Para ello, es necesario que esta entidad actue como un MQTT Client en el rol de \textit{publisher}, es decir, actua realizando un envío de los datos en el topic que corresponda a las medidas de cada sensor.
+
+        \paragraph{}
+        La jerarquía que se utiliza para los distintos topics MQTT sigue el esquema \textbf{UNIVERSIDAD/EDIFICIO/ESTANCIA/SENSOR}. Este esquema permite que los topics puedan ser agregados como se comentó en la sección perteneciente a esta tecnología.
+
+        \subsubsection{MQTT Broker}
+
+        \paragraph{}
+        Esta entidad es la encargada de comunicar a los distintos MQTT Client del escenario. Su objetivo principal es que los mensajes que los MQTT Client publican sobre un topic, llegue a los MQTT Client que se han suscrito a dicho topic.
+
+        \paragraph{}
+        En principio, se considera que esta entidad no debe ser personalizada para nuestro escenario por lo que cualquier implementación de un MQTT Broker debería servir para realizar las tareas de esta entidad. Más adelante, se analiza la opción que se ha considerado.
+
+        \subsubsection{MQTT Client (subscriber) + Kafka Producer}
+
+        \paragraph{}
+        El siguiente eslabón es una entidad cuyo objetivo es recopilar todos las datos recogidos por un MQTT Broker sobre un topic, es decir, todas las mediciones publicadas por los dispositivos. Para ello, toma el papel de MQTT Client en rol de \textit{subscriber} para realizar una suscripción a los topic del MQTT Broker que contienen la información que le intersa.
+
+        \paragraph{}
+        Del mismo modo, esta entidad debe procesar los datos para generar un stream de información que pueda ser enviado al Kafka Cluster. Para ello, actúa como un Kafka Producer. También es interesante destacar que en esta entidad, se podría realizar algunas labores de preprocesamiento de los datos como podría ser tratar de eliminar aquellas mediciones que contienen datos erróneos.
+
+        \subsubsection{Kafka Cluster}
+
+        \paragraph{}
+        La entidad más compleja de todo el \textit{data pipeline} definido es, sin ninguna duda, este cluster. La unidad sobre la que se articula la plataforma Kafka suele estar formada por un conjunto de servidores que son coordinados para sincronizar el procesamiento entre los Producers y los Consumers de los streams de información. Este conjunto de servidores deben garantizar que exista tolerancia a fallos y que no exista pérdida de información.
+
+        \paragraph{}
+        Diseñar una arquitectura para este cluster queda fuera del ámbito de este trabajo. Por tanto, se ha optado por considerar que este cluster está formado por un sólo servidor que debería ofrecer todas las garantías que ofrece la plataforma Kafka.
+
+        \subsubsection{Kafka Consumer}
+
+        \paragraph{}
+        Como consecuencia de la arquitectura que propone la plataforma Apache Kafka surge esta entidad en la que se procesa de forma distribuida los streams de datos generados. El objetivo de esta entidad es recoger toda la información para almacenarla en bases de datos.
+
+        \paragraph{}
+        Así pues, este tipo de figura deberá actuar como un Kafka Consumer que recoja los datos del Kafka Cluster. Estos datos los deberá almacenar en la base de datos que hemos seleccionado, es decir, InfluxDB. Para representar la información, este tipo de base de datos utiliza una estructura formateada como un documento JSON.
+
         \subsubsection{InfluxDB}
-        \subsubsection{Grafana}        
+
+        \paragraph{}
+        El Kafka Consumer debe almacenar la información en una base datos. Como se ha visto, se ha seleccionado InfluxDB como soporte de almacenamiento. Esta plataforma puede ser desplegada en un servidor de forma sencilla y ofrece soporte para ofrecer escalabilidad horizontal. No obstante, el alcance de este proyecto limita su despliegue a un solo servicio centralizado sobre el que todos los Kafka Consumer deben almacenar la información.
+
+        \paragraph{}
+        Para almacenar esta información, los Kafka Consumer deben enviarla utilizando un documento en formato JSON. En este caso, utilizaremos el siguiente formato.
+        
+        \begin{lstlisting}
+{
+    "measurement": "TIPO-DE-MEDIDA",
+    "tags": {
+        "location": "UNIVERSIDAD/EDIFICIO/ESTANCIA",
+    },
+    "time": "TIMESTAMP",
+    "fields": {
+        "value": "VALOR-MEDIDO"
+    }
+}
+        \end{lstlisting}
+
+        \subsubsection{Grafana}
+        
+        \paragraph{}
+        Hasta este momento, hemos conseguido almacenar toda la información, que se ha producido de forma distribuida recogiendo información de los sensores, en una base de datos que puede ser escalada horizontalmente para garantizar su disponibilidad.
+
+        \paragraph{}
+        Es el momento de hablar sobre el análisis de toda esta información. La explotación de este tipo de datos tiene diferentes enfoques, desde la realización de análisis de la información con técnicas de minería de datos que permitan analizar patrones y predecir el comportamiento en el futuro; hasta la generación de cuadros de mando o dashboards que faciliten la labor de toma de decisiones a las personas que analizan estos datos.
+
+        \paragraph{}
+        Grafana es una herramienta que se centra en este último aspecto y está dirigido a medidas de series temporales como las que se recogen utilizando los sensores comentados. Así pues, el objetivo debería ser establecer algún tipo de dashboard que facilite la interpretación de la inmensa cantidad de datos que se pueden generar en un sistema como este. En la sección \ref{sec-data-analysis} se comenta el dashboard que se ha generado. 
 
         \section{Desarrollo de solución}
 
+        \paragraph{}
+        En esta sección abordamos todas las cuestiones que han surgido al tratar de llevar el \textit{data pipeline} diseñado a la práctica. Abordamos los dispositivos y sensores que se han utilizado, los distintos servicios que se han desarrollado, las herramientas que se han utilizado para facilitar su despliegue y una breve muestra del estado actual del proyecto con el análisis que es posible llevar a cabo sobre los datos existentes.
+
+        \paragraph{}
+        Antes de entrar a profundizar en ninguno de estos aspectos, es necesario destacar que no se va a incluir el código desarrollado en esta memoria porque éste se encuentra disponible en el siguiente repositorio de GitHub: \url{https://github.com/adrymyry/iot-pipeline}.
+
         \subsection{Dispositivos y sensores}
+        
+        \paragraph{}
+        El dispositivo encargado de realizar la lectura de los datos y estar conectado a los distintos sensores será una Raspberry Pi. En este caso, se ha optado por utilizar la versión \textit{Model 3} de la misma pero podría replicarse con cualquier otra versión de la misma.
+
+        \paragraph{}
+        Entre todos los sensores que se podían utilizar, se ha optado por simplificar el escenario utilizando un sensor DHT11 para lectura de temperatura y humedad como el que se ha utilizado en las prácticas de la asignatura en la que se enmarca este trabajo. Para su utilización en la Raspberry Pi, es necesario instalar la siguiente librería \url{https://github.com/adafruit/Adafruit_Python_DHT}.
+
+        \paragraph{}
+        En la figura \ref{fig-schema} encontramos una versión del esquemático que habría que utilizar para conectar la Raspberry Pi con el sensor DHT11.
+
+        \begin{figure}[ht]
+            \centerline{\includegraphics[width=0.6\paperwidth]{schema}}
+            \caption{Esquemático para la conexión de la Raspberry Pi y el sensor.}
+            \label{fig-schema}
+        \end{figure}
+
+        \paragraph{}
+        En el repositorio de código comentado al inicio de esta sección, se encuentra el script en Python que debería ser ejecutado en la Raspberry Pi para que ésta lea los datos del sensor DHT11 y envié la información al MQTT Broker.
 
         \subsection{Virtualización de servicios}
         
+        \paragraph{}
+        Con el objetivo de automatizar las tareas de despliegue de toda la infraestructura desarrollada para el \textit{data pipeline} se ha optado por desarrollar la tecnología de virtualización Docker \cite{docker} junto con herramientas como Docker-compose \cite{docker-compose}. Todos los servicios han sido \textit{dockerizados}, es decir, incluidos en un contenedor que los aisla del resto. 
+
+        \paragraph{}
+        El uso de este tipo de tecnologías reduce de forma drástica el tiempo necesario para replicar el escenario desarrollado en distintas máquinas. Además ofrece ventajas para poder escalar cualquier tipo de recurso. Por ejemplo, el script que se utiliza para recoger la información de los sensores y enviarla al MQTT Broker puede ser incluido en un contenedor (con algunas modificaciones que simulen la lectura de datos desde los sensores) para tratar de mostrar el comportamiento que tendría el sistema al escalarlo a un entorno real.
+
+        \paragraph{}
+        Como se comenta en la sección de Diseño, el MQTT Broker y el Kafka cluster son elementos que no requieren ninguna personalización para nuestro escenario. Por tanto, podemos utilizar alguna implementación realizada previamente. Eclipse Mosquitto \cite{mosquitto} es una implementación del MQTT Broker ampliamente utilizada en despliegues de este tipo de tecnología. Para su inclusión, se ha utilzado la imagen oficial presente en el repositorio de imágenes de Docker \cite{mosquitto-docker}. Así mismo, existe diversas imágenes para el cluster de Kafka. En este caso, se ha optado por la opción cuyo soporte realiza Bitnami \cite{bitnami}, una compañía especializada en el soporte de este tipo de plataformas \cite{kafka-docker}.
+
+        \paragraph{}
+        Del mismo modo, las plataformas de la base de datos InfluxDB y el servicio que ofrece Grafana también pueden ser virtualizados con las imagenes oficiales desarrolladas por los desarrolladores de cada una de ellas \cite{influx-docker} \cite{grafana-docker}.
+
         \subsection{Desarrollo de servicios en Python}
+
+        \paragraph{}
+        Para la programación de todas las entidades que se han desarrollado se ha optado por desarrollar unos scripts básicos en Python que permitan simular el comportamiento que deben representar.
+
+        \paragraph{}
+        Para la utilización del protocolo MQTT en los distintos clientes se ha utilizado la librería \textit{paho-mqtt} \cite{paho-mqtt}, para el desarrollo del comportamiento del Kafka Producer y del Kafka Consumer se ha optado por utilizar la librería \textit{kafka-python} \cite{kafka-python} y para la funcionalidad relacionada con la gestión de la información en la base de datos InfluxDB se ha optado por la librería \textit{influxdb-python} \cite{influx-python}.
         
-        \subsection{Análisis de datos}
+        \subsection{Análisis de datos} \label{sec-data-analysis}
         
+        \paragraph{}
+        Grafana es una herramienta que permite hacer cuadros de mandos de todo tipo. Desde cosas bastante sencillas a otras mucho más complejas. Para el alcance de este trabajo, se ha considerado interesante explorar las opciones que la plataforma ofrece realizando una aproximación a lo que podría ser un cuadro de mando que siriviese para monitorizar el estado de la temperatura en las distintas ubicaciones de lo Universidad de Murcia.
+
+        \paragraph{}
+        Para ello utilizaremos tres paneles que nos presentan la siguiente información:
+        
+        \begin{itemize}
+            \item \textbf{Temperatura actual} en los distintas estancias utilizando un código de colores que permita conocer rápidamente el estado de los distintos edificios.
+            \item \textbf{Evolución de la temperatura} en las distintas estancias en una ventana temporal que puede ser configurada como parámetro del cuadro de mando al que pertenece el panel.
+            \item \textbf{Temperatura media} en la Universidad de Murcia. Es recomendable resaltar una medida que pueda ser utilizada como indicador clave (KPI) para medir el estado de un determinado elemento. En este caso, se ha seleccionado este valor de temperatura media que se resalta utilizando un código de colores igual que el de la temperatura actual para asociar el valor a un determinado estado.
+        \end{itemize}
+
+        \paragraph{}
+        La figura \ref{fig-dashboard} muestra cómo puede verse este cuadro de mandos desarrollado y toda la información que ha sido comentada.
+
+        \begin{figure}[ht]
+            \centerline{\includegraphics[width=0.8\paperwidth]{dashboard}}
+            \caption{Dashboard en Grafana para analizar temperatura en la UMU.}
+            \label{fig-dashboard}
+        \end{figure}
+
         \section{Conclusiones}
 
         \paragraph{}
@@ -169,11 +320,10 @@
         Tras su realización, se propone como vías futuras para continuar con el mismo la profundización en todas las tecnologías que han sido utilizadas ya que su inclusión ha sido meramente simbólica y no se ha llegado a explorar con profundidad ni detenimiento de ninguna de ellas. Del mismo modo, sería interesante realizar un análisis de la idoneidad de este tipo de arquitecturas para algún escenario de despliegue real más allá del inventado para realizar las pruebas que permitiesen la elaboración de este trabajo.
 
         \paragraph{}
-        Por otro lado, sería interesante destacar como la realización de este tipo de trabajos permite explorar tecnologías que quedan fuera del alcance de la programación de ninguna asignatura, permitiendo realizar un proceso de formación un tanto diferente al que se sigue tradicionalmente. Esto suele generar mucha contronversia en los alumnos puesto que tener que enfrentarse a trabajos con una temática libre es algo a lo que no se está aconstubmrado. No obstante, se deberían comenzar a valor de una forma mucho más positiva ya que implica el desarrollo de capacidades que no solemos trabajar.
+        Por otro lado, sería interesante destacar como la realización de este tipo de trabajos permite explorar tecnologías que quedan fuera del alcance de la programación de ninguna asignatura, permitiendo realizar un proceso de formación un tanto diferente al que se sigue tradicionalmente. Esto suele generar mucha contronversia en los alumnos puesto que tener que enfrentarse a trabajos con una temática libre es algo a lo que no se está aconstubmrado. No obstante, se deberían comenzar a valor de una forma mucho más positiva ya que implica el desarrollo de capacidades que no se suelen trabajar.
 
-        % \begin{figure}[p]
-        %         \centerline{\includegraphics[width=0.9\paperwidth]{ventas}}
-        %         \caption{Modelo multidimensional de la tabla de hechos Ventas.}
-        % \end{figure}
-
-\end{document}
+        \clearpage
+        \addcontentsline{toc}{chapter}{Bibliografía}
+        \bibliographystyle{plain}
+        \bibliography{./memoria.bib}
+    \end{document}
